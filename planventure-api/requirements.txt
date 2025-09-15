@@ -13,5 +13,3 @@ bcrypt==4.0.1
 
 # Database migrations
 Flask-Migrate==4.0.5
-
-pytest==8.3.2
