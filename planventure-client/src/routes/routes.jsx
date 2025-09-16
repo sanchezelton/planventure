@@ -1,4 +1,5 @@
 import Home from '../pages/Home';
+import LoginPage from '../pages/LoginPage';
 
 export const publicRoutes = [
   {
@@ -7,7 +8,7 @@ export const publicRoutes = [
   },
   {
     path: '/login',
-    element: <Home />, // Temporarily using Home component
+    element: <LoginPage />,
   },
 ];
 

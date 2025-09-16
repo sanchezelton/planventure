@@ -1,7 +1,10 @@
-import { Box, Typography, Container } from '@mui/material';
+import { Box, Typography, Container, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import planventureLogo from '../assets/planventure-logo.svg';
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <Container maxWidth="sm">
       <Box 
@@ -34,13 +37,25 @@ const Home = () => {
         <Typography 
           variant="body1"
           sx={{ 
-            mb: 2, 
+            mb: 4, 
             textAlign: 'center',
             color: 'secondary.light'
           }}
         >
           Your next adventure begins here. Start planning unforgettable trips with our intuitive planning tools and make every journey memorable.
         </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => navigate('/login')}
+          sx={{
+            py: 2,
+            px: 4,
+            fontSize: '1.1rem'
+          }}
+        >
+          Get Started
+        </Button>
       </Box>
     </Container>
   );
