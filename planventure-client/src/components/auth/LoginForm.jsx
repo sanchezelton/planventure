@@ -102,7 +102,7 @@ const LoginForm = () => {
       }}
     >
       <Typography variant="h4" component="h1" textAlign="center" gutterBottom>
-        Login
+        Login to Planventure
       </Typography>
 
       {error && (

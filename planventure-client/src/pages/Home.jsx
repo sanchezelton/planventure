@@ -1,11 +1,12 @@
 import { Box, Typography, Container, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import planventureLogo from '../assets/planventure-logo.svg';
+import MainLayout from '../layouts/MainLayout';
 
 const Home = () => {
   const navigate = useNavigate();
 
-  return (
+  const content = (
     <Container maxWidth="sm">
       <Box 
         sx={{
@@ -58,6 +59,12 @@ const Home = () => {
         </Button>
       </Box>
     </Container>
+  );
+
+  return (
+    <MainLayout>
+      {content}
+    </MainLayout>
   );
 };
 

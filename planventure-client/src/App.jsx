@@ -9,7 +9,6 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <MainLayout>
           <Routes>
             {publicRoutes.map((route) => (
               <Route 
@@ -31,7 +30,6 @@ function App() {
               />
             ))}
           </Routes>
-        </MainLayout>
       </Router>
     </AuthProvider>
   );
