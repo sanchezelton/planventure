@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   Box,
   TextField,
@@ -13,9 +13,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 
-const LoginForm = () => {
+const SignupForm = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { setIsAuthenticated } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -23,10 +22,12 @@ const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmPassword: ''
   });
   const [formErrors, setFormErrors] = useState({
     email: '',
     password: '',
+    confirmPassword: ''
   });
 
   const validateForm = () => {
@@ -45,6 +46,12 @@ const LoginForm = () => {
       errors.password = 'Password must be at least 6 characters';
     }
 
+    if (!formData.confirmPassword) {
+      errors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -59,17 +66,20 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
-      const response = await api.post('/auth/login', formData);
+      const response = await api.post('/auth/register', {
+        email: formData.email,
+        password: formData.password
+      });
+
       if (response.token) {
         localStorage.setItem('token', response.token);
         setIsAuthenticated(true);
-        const from = location.state?.from?.pathname || '/trips';
-        navigate(from, { replace: true });
+        navigate('/trips');
       } else {
-        setError('Login failed. Please check your credentials.');
+        setError('Registration failed. Please try again.');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during login');
+      setError(err.message || 'An error occurred during registration');
     } finally {
       setLoading(false);
     }
@@ -102,7 +112,7 @@ const LoginForm = () => {
       }}
     >
       <Typography variant="h4" component="h1" textAlign="center" gutterBottom>
-        Login to Planventure
+        Create Account
       </Typography>
 
       {error && (
@@ -133,7 +143,7 @@ const LoginForm = () => {
         onChange={handleChange}
         error={!!formErrors.password}
         helperText={formErrors.password}
-        autoComplete="current-password"
+        autoComplete="new-password"
         required
         InputProps={{
           endAdornment: (
@@ -149,6 +159,19 @@ const LoginForm = () => {
         }}
       />
 
+      <TextField
+        fullWidth
+        label="Confirm Password"
+        name="confirmPassword"
+        type={showPassword ? 'text' : 'password'}
+        value={formData.confirmPassword}
+        onChange={handleChange}
+        error={!!formErrors.confirmPassword}
+        helperText={formErrors.confirmPassword}
+        autoComplete="new-password"
+        required
+      />
+
       <Button
         type="submit"
         variant="contained"
@@ -156,17 +179,21 @@ const LoginForm = () => {
         disabled={loading}
         sx={{ mt: 2 }}
       >
-        {loading ? 'Logging in...' : 'Login'}
+        {loading ? 'Creating Account...' : 'Sign Up'}
       </Button>
 
       <Typography variant="body2" textAlign="center" sx={{ mt: 2 }}>
-        Don't have an account?{' '}
-        <RouterLink to="/signup" style={{ textDecoration: 'none' }}>
-          Sign Up
-        </RouterLink>
+        Already have an account?{' '}
+        <Button
+          variant="text"
+          onClick={() => navigate('/login')}
+          sx={{ p: 0, minWidth: 'auto', verticalAlign: 'baseline' }}
+        >
+          Login here
+        </Button>
       </Typography>
     </Box>
   );
 };
 
-export default LoginForm;
+export default SignupForm;

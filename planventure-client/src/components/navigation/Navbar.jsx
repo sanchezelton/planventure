@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
 const Navbar = () => {
@@ -29,12 +29,21 @@ const Navbar = () => {
         >
           Planventure
         </Typography>
-        <Button 
-          color="inherit"
-          onClick={() => navigate('/login')}
-        >
-          Login
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button 
+            color="inherit"
+            onClick={() => navigate('/login')}
+          >
+            Login
+          </Button>
+          <Button 
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate('/register')}
+          >
+            Sign Up
+          </Button>
+        </Box>
       </Toolbar>
     </AppBar>
   );

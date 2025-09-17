@@ -1,5 +1,6 @@
 import Home from '../pages/Home';
 import LoginPage from '../pages/LoginPage';
+import SignUpPage from '../pages/SignUpPage';
 
 export const publicRoutes = [
   {
@@ -10,6 +11,10 @@ export const publicRoutes = [
     path: '/login',
     element: <LoginPage />,
   },
+  {
+    path: '/signup',
+    element: <SignUpPage />,
+  }
 ];
 
 export const protectedRoutes = [
