@@ -16,7 +16,7 @@ Last updated 2025-09-18
 
 ### Changed
 
-- 2025-09-15 [PV-3](https://github.com/sanchezelton/planventure/issues/3) Audit vulnerabilities auto-fixed
+- 2025-09-15 [PV-3](https://github.com/sanchezelton/planventure/issues/3) Bug: Audit vulnerabilities auto-fixed
 
 ### Removed
 
@@ -27,4 +27,5 @@ Last updated 2025-09-18
 There are no release versions at current.
 
 [unreleased]: https://github.com/sanchezelton/planventure/tree/my-app
+
 <!-- TBD [unreleased]: https://github.com/sanchezelton/planventure/compare/v1.1.1...HEAD -->
