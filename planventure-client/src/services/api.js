@@ -32,6 +32,39 @@ class ApiService {
     return data;
   }
 
+  // Auth specific methods
+  async login(email, password) {
+    try {
+      const response = await this.post('/auth/login', { email, password });
+      if (response.token) {
+        this.setAuthToken(response.token);
+      }
+      return response;
+    } catch (error) {
+      throw new Error(error.message || 'Login failed. Please check your credentials.');
+    }
+  }
+
+  async register(email, password) {
+    try {
+      const response = await this.post('/auth/register', { email, password });
+      if (response.token) {
+        this.setAuthToken(response.token);
+      }
+      return response;
+    } catch (error) {
+      throw new Error(error.message || 'Registration failed. Please try again.');
+    }
+  }
+
+  async verifyToken() {
+    try {
+      return await this.get('/auth/verify');
+    } catch (error) {
+      throw new Error('Token verification failed');
+    }
+  }
+
   async get(endpoint) {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'GET',

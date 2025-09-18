@@ -66,11 +66,7 @@ const SignupForm = () => {
 
     setLoading(true);
     try {
-      const response = await api.post('/auth/register', {
-        email: formData.email,
-        password: formData.password
-      });
-
+      const response = await api.register(formData.email, formData.password);
       if (response.token) {
         localStorage.setItem('token', response.token);
         setIsAuthenticated(true);
@@ -79,7 +75,7 @@ const SignupForm = () => {
         setError('Registration failed. Please try again.');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during registration');
+      setError(err.message);
     } finally {
       setLoading(false);
     }

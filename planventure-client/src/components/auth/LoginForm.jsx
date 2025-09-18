@@ -59,7 +59,7 @@ const LoginForm = () => {
 
     setLoading(true);
     try {
-      const response = await api.post('/auth/login', formData);
+      const response = await api.login(formData.email, formData.password);
       if (response.token) {
         localStorage.setItem('token', response.token);
         setIsAuthenticated(true);
@@ -69,7 +69,7 @@ const LoginForm = () => {
         setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during login');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
