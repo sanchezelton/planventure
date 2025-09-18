@@ -4,6 +4,10 @@
 
 A Flask-based REST API backend for the Planventure application.
 
+## Code Styling
+
+The code styling for this project utilizes Black for the Python API server in `planventure-api` and linting built into the Vite frontend application in `planventure-client`. 
+
 ## Prerequisites
 Before you begin, ensure you have the following:
 
