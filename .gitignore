@@ -1,4 +1,5 @@
 .vscode
+*.code-workspace
 # Bruno adds a dir to your vscode workspace
 Planventure
 __pycache__
