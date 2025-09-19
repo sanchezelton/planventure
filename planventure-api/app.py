@@ -36,22 +36,26 @@ db.init_app(app)
 
 @app.route("/")
 def home():
+    """Home route"""
     return jsonify({"message": "Welcome to PlanVenture API"})
 
 
 @app.route("/health")
 def health_check():
+    """Health check route"""
     return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
 
 
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
+    """Handle 404 errors"""
     return jsonify({"error": "Resource not found"}), 404
 
 
 @app.errorhandler(500)
 def server_error(error):
+    """Handle 500 errors"""
     return jsonify({"error": "Internal server error"}), 500
 
 
