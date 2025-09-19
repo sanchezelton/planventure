@@ -39,3 +39,22 @@ def test_user_attributes():
     assert hasattr(user, "is_active")
     assert hasattr(user, "created_at")
     assert hasattr(user, "updated_at")
+
+
+def test_email_validation():
+    """Test email validation method."""
+    # Valid email cases
+    assert User.validate_email("test@example.com") is True
+    assert User.validate_email("user.name+tag@domain.co.uk") is True
+    assert User.validate_email("first.last+seq@domain.io") is True
+
+    # Invalid email cases
+    assert User.validate_email("invalid.email") is False
+    assert User.validate_email("@domain.com") is False
+    assert User.validate_email("user@.com") is False
+
+
+def test_invalid_email_user_creation():
+    """Test creating a user with an invalid email raises ValueError."""
+    with pytest.raises(ValueError):
+        User(email="invalid.email", password="password123")

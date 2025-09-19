@@ -1,3 +1,4 @@
+import re
 import bcrypt
 from .base import BaseModel, db
 from datetime import datetime
@@ -23,6 +24,8 @@ class User(BaseModel):
     def __init__(self, email, password):
         """Initializes a User instance with email and hashed password."""
         super().__init__()
+        if not self.validate_email(email):
+            raise ValueError("Invalid email format")
         self.email = email
         self.set_password(password)
         self.is_active = True
@@ -38,3 +41,12 @@ class User(BaseModel):
         return bcrypt.checkpw(
             plaintext_password.encode("utf-8"), self.password_hash.encode("utf-8")
         )
+
+    @staticmethod
+    def validate_email(email: str) -> bool:
+        """
+        Validates an email address format.
+        Returns True if valid, False otherwise.
+        """
+        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        return bool(re.match(email_pattern, email))
