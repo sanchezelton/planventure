@@ -1,9 +1,9 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from models import db, User
 
 # Load environment variables
 load_dotenv()
@@ -31,40 +31,33 @@ CORS(
 )
 
 # Initialize SQLAlchemy
-db = SQLAlchemy(app)
-
-
-# Base model class
-class BaseModel(db.Model):
-    __abstract__ = True
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+db.init_app(app)
 
 
 @app.route("/")
 def home():
+    """Home route"""
     return jsonify({"message": "Welcome to PlanVenture API"})
 
 
 @app.route("/health")
 def health_check():
+    """Health check route"""
     return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
 
 
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
+    """Handle 404 errors"""
     return jsonify({"error": "Resource not found"}), 404
 
 
 @app.errorhandler(500)
 def server_error(error):
+    """Handle 500 errors"""
     return jsonify({"error": "Internal server error"}), 500
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()  # Create database tables
     app.run(debug=True)
