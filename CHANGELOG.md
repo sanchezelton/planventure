@@ -13,6 +13,7 @@ Last updated 2025-09-18
 ### Added
 
 - 2025-09-18 [PV-6](https://github.com/sanchezelton/planventure/issues/6) Create the database setup
+- 2025-09-18 [PV-5](https://github.com/sanchezelton/planventure/issues/5) Implement User and Trip Models
 
 ### Changed
 
