@@ -1,9 +1,9 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from models import db, User
 
 # Load environment variables
 load_dotenv()
@@ -31,16 +31,7 @@ CORS(
 )
 
 # Initialize SQLAlchemy
-db = SQLAlchemy(app)
-
-
-# Base model class
-class BaseModel(db.Model):
-    __abstract__ = True
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+db.init_app(app)
 
 
 @app.route("/")
@@ -65,6 +56,4 @@ def server_error(error):
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()  # Create database tables
     app.run(debug=True)
