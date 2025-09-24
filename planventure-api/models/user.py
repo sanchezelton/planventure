@@ -1,7 +1,7 @@
 import re
-import bcrypt
 from .base import BaseModel, db
 from datetime import datetime, timezone
+from utils.security import hash_password, verify_password
 
 
 class User(BaseModel):
@@ -12,12 +12,8 @@ class User(BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
+    password_salt = db.Column(db.String(128), nullable=False)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(
-        db.DateTime,
-        onupdate=lambda: datetime.now(timezone.utc),
-    )
 
     # Add relationship
     trips = db.relationship("Trip", back_populates="user", lazy="dynamic")
@@ -32,20 +28,21 @@ class User(BaseModel):
         if not self.validate_email(email):
             raise ValueError("Invalid email format")
         self.email = email
-        self.set_password(password)
+        self.__init_password(password)
         self.is_active = True
 
-    def set_password(self, password):
+    def __init_password(self, password):
         """Hashes the password and stores it."""
-        self.password_hash = bcrypt.hashpw(
-            password.encode("utf-8"), bcrypt.gensalt()
-        ).decode("utf-8")
+        self.password_hash, self.password_salt = hash_password(password)
 
-    def authenticate(self, plaintext_password):
-        """Verifies the plaintext password against the stored hash."""
-        return bcrypt.checkpw(
-            plaintext_password.encode("utf-8"), self.password_hash.encode("utf-8")
-        )
+    def set_password(self, password):
+        """Hashes the password and updates it."""
+        self.password_hash, self.password_salt = hash_password(password)
+        self.updated_at = datetime.now(timezone.utc)
+
+    def authenticate(self, password: str) -> bool:
+        """Verify the provided password against stored hash."""
+        return verify_password(password, self.password_hash)
 
     @staticmethod
     def validate_email(email: str) -> bool:
