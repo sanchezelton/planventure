@@ -1,5 +1,5 @@
 from .base import BaseModel, db
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class Trip(BaseModel):
@@ -17,6 +17,11 @@ class Trip(BaseModel):
     latitude = db.Column(db.Float, nullable=True)
     longitude = db.Column(db.Float, nullable=True)
     itinerary = db.Column(db.JSON)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime,
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
 
     # Relationship
     user = db.relationship("User", back_populates="trips")
