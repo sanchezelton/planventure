@@ -1,6 +1,8 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
+from flask_jwt_extended import JWTManager
+import jwt
 import os
 from dotenv import load_dotenv
 from models import db
@@ -28,6 +30,7 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(
     days=int(os.getenv("JWT_REFRESH_TOKEN_DAYS", 30))
 )
 app.config["JWT_ALGORITHM"] = os.getenv("JWT_ALGORITHM", "HS256")
+jwt = JWTManager(app)
 
 # Configure CORS
 CORS(
@@ -58,6 +61,25 @@ def home():
 def health_check():
     """Health check route"""
     return jsonify({"status": "healthy", "timestamp": datetime.now().isoformat()})
+
+
+# JWT error handlers
+@jwt.expired_token_loader
+def expired_token_callback(error):
+    """Handle expired JWT tokens"""
+    return jsonify({"error": "Token has expired"}), 401
+
+
+@jwt.invalid_token_loader
+def invalid_token(error):
+    """Handle invalid JWT tokens"""
+    return jsonify({"error": "Invalid token"}), 401
+
+
+@jwt.unauthorized_loader
+def unauthorized_callback(error):
+    """Handle missing JWT tokens"""
+    return jsonify({"error": "Authorization token is missing"}), 401
 
 
 # Error handlers

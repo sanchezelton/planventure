@@ -126,3 +126,37 @@ def login():
         stack_trace = traceback.format_exc()
         logging.error(f"Login error: {stack_trace}\n{stack_trace}")
         return jsonify({"error": f"Login failed: {e}"}), 500
+
+
+@auth_bp.route("/refresh", methods=["POST"])
+def refresh_token():
+    """Refresh access token using refresh token.
+    Expects POST method with Authorization header containing the refresh token.
+
+    Returns a 200 successful HTTP status response with new tokens or
+    errors with a...
+    • 401 error message if the token is invalid or user is inactive."""
+    try:
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            raise Unauthorized("No authorization header")
+
+        auth_type, token = auth_header.split()
+        if auth_type.lower() != "bearer":
+            raise Unauthorized("Invalid authorization scheme")
+
+        # Verify refresh token
+        payload = User.verify_refresh_token(token)
+
+        # Get user and generate new tokens
+        user = User.query.filter_by(email=payload["sub"]).first()
+        if not user or not user.is_active:
+            raise Unauthorized("Invalid or inactive user")
+
+        tokens = user.generate_auth_tokens()
+        return jsonify({"message": "Token refreshed successfully", **tokens})
+
+    except Exception as e:
+        stack_trace = traceback.format_exc()
+        logging.error(f"Refresh access token error: {stack_trace}\n{stack_trace}")
+        return jsonify({"error": str(e)}), 401
