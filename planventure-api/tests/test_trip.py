@@ -89,6 +89,28 @@ def test_trip_attributes(sample_trip):
     assert hasattr(sample_trip, "longitude")  # New attribute
 
 
+def test_trip_latlong_together_validation(sample_user):
+    """Test that Trip raises ValueError if only one of latitude or longitude is provided."""
+    with pytest.raises(ValueError):
+        Trip(
+            title="Invalid Trip",
+            description="Trip with only latitude",
+            start_date=datetime.now() + timedelta(days=5),
+            end_date=datetime.now(),
+            user_id=sample_user.id,
+            latitude=45.0,  # Only latitude provided
+        )
+    with pytest.raises(ValueError):
+        Trip(
+            title="Invalid Trip",
+            description="Trip with only longitude",
+            start_date=datetime.now() + timedelta(days=5),
+            end_date=datetime.now(),
+            user_id=sample_user.id,
+            longitude=90.0,  # Only longitude provided
+        )
+
+
 def test_trip_user_relationship(sample_trip, sample_user):
     """Test the relationship between Trip and User."""
     assert sample_trip.user_id == sample_user.id
