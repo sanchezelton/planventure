@@ -15,17 +15,20 @@ class InvalidCredentials(Unauthorized):
 
 
 @auth_bp.route("/register", methods=["POST"])
-def register():
-    """Register a new user with email validation.
-    Expects POST method with JSON body containing arguments:
-    • 'email': The new user's email address
-    • 'password': The new user's password
+def post_register():
+    """Registers a new user with email validation.
 
-    Returns a 201 successful HTTP status response with tokens or
-    errors with a...
-    • 400 error message if the request is invalid
-    • 409 error message if the email is already registered.
-    • 500 error message if registration fails for some other reason."""
+    Args:
+        email (str): The new user's email address
+        password (str): The new user's password
+
+    Returns:
+        Response: A 201 successful HTTP status response with tokens or
+        errors with a...
+        • 400 error message if the request is invalid
+        • 409 error message if the email is already registered.
+        • 500 error message if registration fails for some other reason.
+    """
     try:
         data = request.get_json()
 
@@ -79,18 +82,20 @@ def register():
 
 
 @auth_bp.route("/login", methods=["POST"])
-def login():
+def post_login():
     """Authenticate user and return JWT tokens.
-    Expects POST method with JSON body containing arguments:
-    • 'email': The user's email address
-    • 'password': The user's password
 
-    Returns a 200 successful HTTP status response with a successful login message
-     along with tokens and a user object with the id and email address of the user.
-     Otherwise, it returns errors with a...
-    • 400 error message if the request is invalid
-    • 401 error message if credentials are invalid or account is deactivated
-    • 500 error message if login fails for some other reason."""
+    Args:
+        email (str): The user's email address
+        password (str): The user's password
+
+    Returns:
+        Response: A 200 successful HTTP status response with a successful login message
+        along with tokens and a user object with the id and email address of the user.
+        Otherwise, it returns errors with a...
+        • 400 error message if the request is invalid
+        • 401 error message if credentials are invalid or account is deactivated
+        • 500 error message if login fails for some other reason."""
     try:
         data = request.get_json()
 
@@ -131,11 +136,17 @@ def login():
 @auth_bp.route("/refresh", methods=["POST"])
 def refresh_token():
     """Refresh access token using refresh token.
-    Expects POST method with Authorization header containing the refresh token.
 
-    Returns a 200 successful HTTP status response with new tokens or
-    errors with a...
-    • 401 error message if the token is invalid or user is inactive."""
+    Args:
+        None (see Headers below)
+
+    Headers:
+        Authorization (str): Bearer <refresh_token>
+
+    Returns:
+        Response: A 200 successful HTTP status response with new tokens or
+        errors with a...
+        • 401 error message if the token is invalid or user is inactive."""
     try:
         auth_header = request.headers.get("Authorization")
         if not auth_header:

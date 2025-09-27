@@ -1,6 +1,6 @@
 from functools import wraps
 import traceback
-from flask import logging, request, jsonify, g
+from flask import logging, request, g as request_context
 from models.user import User
 from werkzeug.exceptions import Unauthorized
 
@@ -30,7 +30,7 @@ def require_auth(f):
                 raise Unauthorized("Invalid or inactive user")
 
             # Store user in request context
-            g.current_user = user
+            request_context.current_user = user
             return f(*args, **kwargs)
 
         except ValueError as e:
