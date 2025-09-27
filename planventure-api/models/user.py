@@ -1,7 +1,9 @@
 import re
+from typing import Dict
 from .base import BaseModel, db
 from datetime import datetime, timezone
 from utils.security import hash_password, verify_password
+from utils.security.jwt import create_access_token, create_refresh_token, verify_token
 
 
 class User(BaseModel):
@@ -52,3 +54,28 @@ class User(BaseModel):
         """
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         return bool(re.match(email_pattern, email))
+
+    def generate_auth_tokens(self) -> Dict[str, str]:
+        """Generate access and refresh tokens for the user."""
+        tokens = {
+            "access_token": create_access_token({"sub": self.email}),
+            "refresh_token": create_refresh_token({"sub": self.email}),
+            "token_type": "bearer",
+        }
+        return tokens
+
+    @staticmethod
+    def verify_access_token(token: str) -> Dict:
+        """Verify an access token and return its payload."""
+        payload = verify_token(token)
+        if payload["type"] != "access":
+            raise jwt.InvalidTokenError("Not an access token")
+        return payload
+
+    @staticmethod
+    def verify_refresh_token(token: str) -> Dict:
+        """Verify a refresh token and return its payload."""
+        payload = verify_token(token)
+        if payload["type"] != "refresh":
+            raise jwt.InvalidTokenError("Not a refresh token")
+        return payload
