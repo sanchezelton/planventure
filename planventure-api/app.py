@@ -1,9 +1,9 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
-from models import db, User
+from models import db
 
 # Load environment variables
 load_dotenv()
@@ -17,6 +17,16 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
+
+# Configure JWT settings
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", app.config["SECRET_KEY"])
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+    minutes=int(os.getenv("JWT_ACCESS_TOKEN_MINUTES", 30))
+)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(
+    days=int(os.getenv("JWT_REFRESH_TOKEN_DAYS", 30))
+)
+app.config["JWT_ALGORITHM"] = os.getenv("JWT_ALGORITHM", "HS256")
 
 # Configure CORS
 CORS(
