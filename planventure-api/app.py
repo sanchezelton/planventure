@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 from models import db
+from routes.auth import auth_bp
 
 # Load environment variables
 load_dotenv()
@@ -42,6 +43,9 @@ CORS(
 
 # Initialize SQLAlchemy
 db.init_app(app)
+
+# Register blueprints
+app.register_blueprint(auth_bp, url_prefix="/auth")
 
 
 @app.route("/")

@@ -55,7 +55,7 @@ class User(BaseModel):
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         return bool(re.match(email_pattern, email))
 
-    def generate_tokens(self) -> Dict[str, str]:
+    def generate_auth_tokens(self) -> Dict[str, str]:
         """Generate access and refresh tokens for the user."""
         tokens = {
             "access_token": create_access_token({"sub": self.email}),
