@@ -42,19 +42,25 @@ class Trip(BaseModel):
         description=None,
     ):
         """Initialize a Trip instance with validation."""
+        super().__init__()
         if start_date >= end_date:
             raise ValueError("start_date must be before end_date")
         if latitude is not None and (latitude < -90 or latitude > 90):
-            raise ValueError("latitude must be between -90 and 90")
+            raise ValueError("latitude must be between -90 and 90 when defined")
         if longitude is not None and (longitude < -180 or longitude > 180):
-            raise ValueError("longitude must be between -180 and 180")
+            raise ValueError("longitude must be between -180 and 180 when defined")
+        if (longitude is not None and latitude is None) or (
+            latitude is not None and longitude is None
+        ):
+            raise ValueError("Both latitude and longitude must be provided together")
         self.title = title
         self.description = description
+        self.destination = (
+            destination or "Unknown"
+        )  # TBD derivation when latlong provided
         self.user_id = user_id
         self.start_date = start_date
         self.end_date = end_date
         self.latitude = latitude
         self.longitude = longitude
         self.itinerary = itinerary or {}
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
