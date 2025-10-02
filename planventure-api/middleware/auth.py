@@ -1,5 +1,4 @@
 from functools import wraps
-import traceback
 from flask import logging, request, g as request_context
 from models.user import User
 from werkzeug.exceptions import Unauthorized, BadRequest, NotFound

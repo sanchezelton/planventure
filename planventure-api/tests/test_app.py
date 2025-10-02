@@ -11,8 +11,10 @@ from datetime import datetime
 # Add the parent directory to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Import the Flask app instance from the main app file (must import _db for database setup)
-from conftest import _db
+# Import the Flask db instance from the main app file (must import for database setup)
+from conftest import (
+    db_instance as _db,
+)
 
 # Import pytest for writing and running tests
 import pytest
@@ -39,7 +41,7 @@ def test_non_existent_route(client):
     assert response.status_code == 404
 
 
-def test_user_registration(client, test_user_login_data):
+def test_user_registration(client, test_user_login_data, _db):
     """Test user registration endpoint."""
     response = client.post("/auth/register", json=test_user_login_data)
     assert response.status_code == 201
@@ -48,7 +50,7 @@ def test_user_registration(client, test_user_login_data):
     assert response.json["message"] == "User registered successfully"
 
 
-def test_duplicate_registration(client, test_user_login_data):
+def test_duplicate_registration(client, test_user_login_data, _db):
     """Test registration with existing email."""
     # First registration
     client.post("/auth/register", json=test_user_login_data)
@@ -60,7 +62,7 @@ def test_duplicate_registration(client, test_user_login_data):
     assert "already registered" in response.json["error"].lower()
 
 
-def test_user_login(client, test_user_login_data):
+def test_user_login(client, test_user_login_data, _db):
     """Test user login endpoint."""
     # Register user first
     client.post("/auth/register", json=test_user_login_data)
@@ -73,7 +75,7 @@ def test_user_login(client, test_user_login_data):
     assert response.json["message"] == "Login successful"
 
 
-def test_invalid_login(client, test_user_login_data):
+def test_invalid_login(client, test_user_login_data, _db):
     """Test login with invalid credentials."""
     # Register user first
     client.post("/auth/register", json=test_user_login_data)
@@ -86,7 +88,7 @@ def test_invalid_login(client, test_user_login_data):
     assert "error" in response.json
 
 
-def test_token_refresh(client, test_user_login_data):
+def test_token_refresh(client, test_user_login_data, _db):
     """Test token refresh endpoint."""
     # Register and login user first
     client.post("/auth/register", json=test_user_login_data)
@@ -102,7 +104,7 @@ def test_token_refresh(client, test_user_login_data):
     assert "refresh_token" in response.json
 
 
-def test_register_invalid_email(client, invalid_email_data):
+def test_register_invalid_email(client, invalid_email_data, _db):
     """Test registration with invalid email format."""
     response = client.post("/auth/register", json=invalid_email_data)
     assert response.status_code == 400
