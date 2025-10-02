@@ -18,9 +18,9 @@ import pytest
 from models.user import User
 
 
-def test_user_creation():
+def test_user_creation(test_user_login_data):
     """Test creating a new user."""
-    user = User(email="test@example.com", password="password123")
+    user = User(**test_user_login_data)
     assert user.email == "test@example.com"
     assert user.is_active is True
     assert user.password_hash is not None
@@ -29,9 +29,9 @@ def test_user_creation():
     assert isinstance(user.updated_at, datetime) or user.updated_at is None
 
 
-def test_password_update():
+def test_password_update(test_user_login_data):
     """Test updating user password."""
-    user = User(email="test@example.com", password="password123")
+    user = User(**test_user_login_data)
     original_hash = user.password_hash
     original_updated_at = user.updated_at
     assert original_updated_at is None
@@ -60,16 +60,16 @@ def test_password_update():
     assert user.authenticate("password123") is False
 
 
-def test_user_authentication():
+def test_user_authentication(test_user_login_data):
     """Test user authentication."""
-    user = User(email="test@example.com", password="password123")
-    assert user.authenticate("password123") is True
+    user = User(**test_user_login_data)
+    assert user.authenticate("securepassword123") is True
     assert user.authenticate("wrongpassword") is False
 
 
-def test_user_attributes():
+def test_user_attributes(test_user_login_data):
     """Test user attributes."""
-    user = User(email="test@example.com", password="password123")
+    user = User(**test_user_login_data)
     assert hasattr(user, "id")
     assert hasattr(user, "email")
     assert hasattr(user, "password_hash")
@@ -78,9 +78,9 @@ def test_user_attributes():
     assert hasattr(user, "updated_at")
 
 
-def test_password_related_attributes():
+def test_password_related_attributes(test_user_login_data):
     """Test password-related attributes and methods."""
-    user = User(email="test@example.com", password="password123")
+    user = User(**test_user_login_data)
     assert hasattr(user, "password_hash")
     assert hasattr(user, "password_salt")
     assert hasattr(user, "authenticate")
