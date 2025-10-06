@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import logging, request, g as request_context
+from jwt import InvalidTokenError
 from models.user import User
 from werkzeug.exceptions import Unauthorized, BadRequest, NotFound
 import logging
@@ -46,6 +47,11 @@ def require_auth(f):
                 if isinstance(e, item):
                     raise e  # Re-raise known exceptions so app or blueprint handlers can catch them
             # Log unexpected errors
+            if isinstance(e, InvalidTokenError):
+                logger.exception("Token verification failed")
+                logger.error(f"Token error details: {e}")
+                logger.error(f"Token: {token}")
+                raise Unauthorized("Invalid or expired token")
             logger.exception("Auth failure")
 
     return decorated

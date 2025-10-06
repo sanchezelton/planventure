@@ -97,6 +97,14 @@ def create_trip():
             end_date=datetime.fromisoformat(data["end_date"]),
             user_id=request_context.current_user.id,
         )
+
+        if "latitude" in data:
+            trip.latitude = data["latitude"]
+        if "longitude" in data:
+            trip.longitude = data["longitude"]
+        if "itinerary" in data:
+            trip.itinerary = data["itinerary"]  # Expecting a JSON object
+
         db.session.add(trip)
         db.session.commit()
         return jsonify(trip.to_dict()), 201
@@ -143,6 +151,12 @@ def update_trip(trip_id):
             trip.start_date = data["start_date"]
         if "end_date" in data:
             trip.end_date = data["end_date"]
+        if "latitude" in data:
+            trip.latitude = data["latitude"]
+        if "longitude" in data:
+            trip.longitude = data["longitude"]
+        if "itinerary" in data:
+            trip.itinerary = data["itinerary"]
 
         db.session.commit()
         return jsonify(trip.to_dict()), 200

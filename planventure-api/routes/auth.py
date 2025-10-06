@@ -1,5 +1,4 @@
 import logging
-import traceback
 from flask import Blueprint, request, jsonify
 from models import db, User
 from werkzeug.exceptions import BadRequest, Conflict, Unauthorized
@@ -114,6 +113,8 @@ def post_login():
 
         # Generate tokens
         tokens = user.generate_auth_tokens()
+        logger.info(f"User {user.email} logged in successfully")
+        logger.info(f"Access Token: {tokens['access_token']}")
 
         return jsonify(
             {
