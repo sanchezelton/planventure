@@ -1,3 +1,4 @@
+import debugpy
 from flask import Flask, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
@@ -7,6 +8,12 @@ import os
 from dotenv import load_dotenv
 from models import db
 from routes.auth import auth_bp
+from routes.trips import trips_bp
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
@@ -47,9 +54,6 @@ CORS(
 # Initialize SQLAlchemy
 db.init_app(app)
 
-# Register blueprints
-app.register_blueprint(auth_bp, url_prefix="/auth")
-
 
 @app.route("/")
 def home():
@@ -86,13 +90,20 @@ def unauthorized_callback(error):
 @app.errorhandler(404)
 def not_found(error):
     """Handle 404 errors"""
+    logger.error(f"NotFound error: {error}")
     return jsonify({"error": "Resource not found"}), 404
 
 
 @app.errorhandler(500)
 def server_error(error):
     """Handle 500 errors"""
+    logger.error(f"Server error: {error}")
     return jsonify({"error": "Internal server error"}), 500
+
+
+# Register blueprints
+app.register_blueprint(auth_bp, url_prefix="/auth")
+app.register_blueprint(trips_bp, url_prefix="/api")
 
 
 if __name__ == "__main__":

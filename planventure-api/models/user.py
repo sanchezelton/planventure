@@ -2,7 +2,7 @@ import re
 from typing import Dict
 from .base import BaseModel, db
 from datetime import datetime, timezone
-from utils.security import hash_password, verify_password
+from utils.security import hash_password, verify_password, jwt
 from utils.security.jwt import create_access_token, create_refresh_token, verify_token
 
 

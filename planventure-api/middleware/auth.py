@@ -1,8 +1,13 @@
 from functools import wraps
-import traceback
 from flask import logging, request, g as request_context
+from jwt import InvalidTokenError
 from models.user import User
-from werkzeug.exceptions import Unauthorized
+from werkzeug.exceptions import Unauthorized, BadRequest, NotFound
+import logging
+
+# Logger for authentication errors
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def require_auth(f):
@@ -34,12 +39,19 @@ def require_auth(f):
             return f(*args, **kwargs)
 
         except ValueError as e:
-            stack_trace = traceback.format_exc()
-            logging.error(f"Auth required error: {stack_trace}\n{stack_trace}")
+            logger.exception("Auth required error")
             raise Unauthorized("Invalid authorization header format")
         except Exception as e:
-            stack_trace = traceback.format_exc()
-            logging.error(f"Auth required error: {stack_trace}\n{stack_trace}")
-            raise Unauthorized(str(e))
+            exceptionList = [NotFound, Unauthorized, BadRequest]
+            for item in exceptionList:
+                if isinstance(e, item):
+                    raise e  # Re-raise known exceptions so app or blueprint handlers can catch them
+            # Log unexpected errors
+            if isinstance(e, InvalidTokenError):
+                logger.exception("Token verification failed")
+                logger.error(f"Token error details: {e}")
+                logger.error(f"Token: {token}")
+                raise Unauthorized("Invalid or expired token")
+            logger.exception("Auth failure")
 
     return decorated

@@ -1,11 +1,14 @@
 import logging
-import traceback
 from flask import Blueprint, request, jsonify
 from models import db, User
 from werkzeug.exceptions import BadRequest, Conflict, Unauthorized
 import re
 
 auth_bp = Blueprint("auth", __name__)  # Blueprint for authentication routes
+
+# Logger for authentication errors
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class InvalidCredentials(Unauthorized):
@@ -63,21 +66,17 @@ def post_register():
         )
 
     except ValueError as e:
-        stack_trace = traceback.format_exc()
-        logging.error(f"ValueError: {stack_trace}\n{stack_trace}")
+        logger.exception("ValueError")
         return jsonify({"error": str(e)}), 400
     except Conflict as e:
-        stack_trace = traceback.format_exc()
-        logging.error(f"Conflict: {stack_trace}\n{stack_trace}")
+        logger.exception("Conflict")
         return jsonify({"error": str(e)}), 409
     except BadRequest as e:
-        stack_trace = traceback.format_exc()
-        logging.error(f"Bad request: {stack_trace}\n{stack_trace}")
+        logger.exception("BadRequest")
         return jsonify({"error": str(e)}), 400
     except Exception as e:
         db.session.rollback()
-        stack_trace = traceback.format_exc()
-        logging.error(f"Registration error: {stack_trace}\n{stack_trace}")
+        logger.exception("Registration error")
         return jsonify({"error": f"Registration failed: {e}"}), 500
 
 
@@ -114,6 +113,8 @@ def post_login():
 
         # Generate tokens
         tokens = user.generate_auth_tokens()
+        logger.info(f"User {user.email} logged in successfully")
+        logger.info(f"Access Token: {tokens['access_token']}")
 
         return jsonify(
             {
@@ -124,12 +125,10 @@ def post_login():
         )
 
     except (BadRequest, Unauthorized) as e:
-        stack_trace = traceback.format_exc()
-        logging.error(f"Login failed: {stack_trace}\n{stack_trace}")
+        logger.exception("Login failed")
         return jsonify({"error": str(e)}), e.code
     except Exception as e:
-        stack_trace = traceback.format_exc()
-        logging.error(f"Login error: {stack_trace}\n{stack_trace}")
+        logger.exception("Login error")
         return jsonify({"error": f"Login failed: {e}"}), 500
 
 
@@ -168,6 +167,5 @@ def refresh_token():
         return jsonify({"message": "Token refreshed successfully", **tokens})
 
     except Exception as e:
-        stack_trace = traceback.format_exc()
-        logging.error(f"Refresh access token error: {stack_trace}\n{stack_trace}")
+        logger.exception("Refresh access token error")
         return jsonify({"error": str(e)}), 401
